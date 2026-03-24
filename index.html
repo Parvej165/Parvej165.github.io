@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,703 +10,302 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:        #050508;
-      --bg2:       #0c0c14;
-      --bg3:       #111120;
-      --green:     #00ff88;
-      --green-dim: #00cc6a;
-      --amber:     #ffb830;
-      --text:      #e2e2f0;
-      --text-muted:#7878a0;
-      --border:    rgba(0,255,136,0.12);
-      --card:      rgba(255,255,255,0.03);
-      --mono:      'Syne Mono', monospace;
-      --sans:      'Outfit', sans-serif;
-      --glow:      0 0 30px rgba(0,255,136,0.25);
+    [data-theme="dark"] {
+      --bg:#050508; --bg2:#0c0c14; --green:#00ff88; --amber:#ffb830;
+      --text:#e2e2f0; --text-muted:#7878a0; --border:rgba(0,255,136,0.12);
+      --card:rgba(255,255,255,0.03); --nav-bg:rgba(5,5,8,0.88);
+      --grid-line:rgba(0,255,136,0.03); --glow:0 0 30px rgba(0,255,136,0.25);
+      --shadow:0 8px 32px rgba(0,0,0,0.45);
     }
+    [data-theme="light"] {
+      --bg:#f4f4f8; --bg2:#eaeaef; --green:#008f50; --amber:#b07500;
+      --text:#111118; --text-muted:#55556e; --border:rgba(0,143,80,0.18);
+      --card:rgba(0,0,0,0.04); --nav-bg:rgba(244,244,248,0.92);
+      --grid-line:rgba(0,143,80,0.05); --glow:0 0 30px rgba(0,143,80,0.18);
+      --shadow:0 8px 32px rgba(0,0,0,0.1);
+    }
+    :root { --mono:'Syne Mono',monospace; --sans:'Outfit',sans-serif; }
 
     html { scroll-behavior: smooth; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.7;
-      overflow-x: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: var(--sans); font-size: 16px; line-height: 1.7;
+      overflow-x: hidden; transition: background 0.4s, color 0.4s;
     }
-
-    /* ── GRID BACKGROUND ── */
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-      z-index: 0;
+      content:''; position:fixed; inset:0;
+      background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+                        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events:none; z-index:0;
     }
 
-    /* ── NAV ── */
+    /* NAV */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 4rem;
-      background: rgba(5,5,8,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:1.1rem 4rem; background:var(--nav-bg);
+      backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+      transition:background 0.4s, border-color 0.4s;
     }
-    .nav-logo {
-      font-family: var(--mono);
-      font-size: 1.1rem;
-      color: var(--green);
-      letter-spacing: 0.05em;
-    }
-    .nav-logo span { color: var(--text-muted); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a {
-      font-size: 0.82rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--green); }
+    .nav-logo { font-family:var(--mono); font-size:1.05rem; color:var(--green); text-decoration:none; }
+    .nav-logo span { color:var(--text-muted); }
+    .nav-right { display:flex; align-items:center; gap:2rem; }
+    .nav-links { display:flex; gap:1.6rem; list-style:none; }
+    .nav-links a { font-size:0.8rem; font-weight:500; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .nav-links a:hover { color:var(--green); }
 
-    /* ── SECTIONS ── */
-    section { position: relative; z-index: 1; }
+    /* THEME TOGGLE */
+    .toggle-wrap { display:flex; align-items:center; gap:0.45rem; cursor:pointer; user-select:none; }
+    .toggle-icon { font-size:0.9rem; line-height:1; }
+    .toggle-track { width:46px; height:25px; background:var(--card); border:1px solid var(--border); border-radius:999px; position:relative; }
+    .toggle-thumb { position:absolute; top:3px; left:3px; width:17px; height:17px; background:var(--green); border-radius:50%; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    [data-theme="light"] .toggle-thumb { transform:translateX(21px); }
 
-    /* ── HERO ── */
-    #hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 8rem 4rem 4rem;
-    }
-    .hero-inner { max-width: 900px; }
-
+    /* HERO */
+    section { position:relative; z-index:1; }
+    #hero { min-height:100vh; display:flex; align-items:center; padding:8rem 4rem 4rem; }
+    .hero-inner { max-width:920px; }
     .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--green);
-      border: 1px solid var(--border);
-      padding: 0.35rem 0.9rem;
-      border-radius: 2px;
-      margin-bottom: 2rem;
-      background: rgba(0,255,136,0.05);
+      display:inline-flex; align-items:center; gap:0.5rem;
+      font-family:var(--mono); font-size:0.76rem; color:var(--green);
+      border:1px solid var(--border); padding:0.35rem 0.9rem; border-radius:2px;
+      margin-bottom:2rem; background:rgba(0,255,136,0.05);
     }
-    .hero-badge::before {
-      content: '';
-      width: 7px; height: 7px;
-      background: var(--green);
-      border-radius: 50%;
-      animation: pulse 1.8s ease infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:0.4; transform:scale(0.8); }
-    }
-
-    .hero-name {
-      font-size: clamp(3rem, 7vw, 6rem);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.5rem;
-    }
-    .hero-name .accent { color: var(--green); }
-
-    .hero-title {
-      font-family: var(--mono);
-      font-size: clamp(1rem, 2.5vw, 1.35rem);
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-    }
-    .hero-title .cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1.1em;
-      background: var(--green);
-      vertical-align: middle;
-      margin-left: 2px;
-      animation: blink 1s step-end infinite;
-    }
+    [data-theme="light"] .hero-badge { background:rgba(0,143,80,0.07); }
+    .hero-badge::before { content:''; width:7px; height:7px; background:var(--green); border-radius:50%; animation:pulse 1.8s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+    .hero-name { font-size:clamp(3rem,7vw,6rem); font-weight:800; line-height:1.05; letter-spacing:-0.03em; margin-bottom:0.5rem; }
+    .hero-name .accent { color:var(--green); }
+    .hero-title { font-family:var(--mono); font-size:clamp(1rem,2.2vw,1.3rem); color:var(--text-muted); margin-bottom:1.5rem; }
+    .cursor-blink { display:inline-block; width:2px; height:1.1em; background:var(--green); vertical-align:middle; margin-left:2px; animation:blink 1s step-end infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-    .hero-desc {
-      max-width: 580px;
-      color: var(--text-muted);
-      font-size: 1.05rem;
-      margin-bottom: 2.5rem;
-      line-height: 1.8;
-    }
-
-    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-desc { max-width:580px; color:var(--text-muted); font-size:1.03rem; margin-bottom:2.5rem; line-height:1.8; }
+    .hero-desc strong { color:var(--text); }
+    .hero-ctas { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.8rem;
-      border-radius: 3px;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
-      text-decoration: none;
-      transition: all 0.25s;
-      cursor: pointer;
-      border: none;
+      display:inline-flex; align-items:center; gap:0.5rem;
+      padding:0.72rem 1.7rem; border-radius:3px;
+      font-family:var(--mono); font-size:0.8rem; letter-spacing:0.06em;
+      text-decoration:none; transition:all 0.25s; cursor:pointer; border:none; font-weight:600;
     }
-    .btn-primary {
-      background: var(--green);
-      color: #050508;
-      font-weight: 700;
-    }
-    .btn-primary:hover { background: #fff; box-shadow: var(--glow); }
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    .btn-outline:hover { border-color: var(--green); color: var(--green); }
+    .btn-primary { background:var(--green); color:#050508; }
+    .btn-primary:hover { filter:brightness(1.15); box-shadow:var(--glow); }
+    .btn-outline { background:transparent; color:var(--text); border:1px solid rgba(128,128,180,0.25); }
+    .btn-outline:hover { border-color:var(--green); color:var(--green); }
+    .btn-resume { background:transparent; color:var(--amber); border:1px solid rgba(255,184,48,0.28); }
+    [data-theme="light"] .btn-resume { border-color:rgba(176,117,0,0.3); }
+    .btn-resume:hover { background:rgba(255,184,48,0.08); border-color:var(--amber); }
+    [data-theme="light"] .btn-resume:hover { background:rgba(176,117,0,0.08); }
+    .btn-resume .dl-icon { transition:transform 0.25s; }
+    .btn-resume:hover .dl-icon { transform:translateY(2px); }
+    .hero-stats { display:flex; gap:3rem; margin-top:4rem; padding-top:3rem; border-top:1px solid var(--border); flex-wrap:wrap; }
+    .stat-val { font-family:var(--mono); font-size:2.2rem; font-weight:700; color:var(--green); }
+    .stat-label { font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:0.2rem; }
 
-    .hero-stats {
-      display: flex;
-      gap: 3rem;
-      margin-top: 4rem;
-      padding-top: 3rem;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-    .stat-val {
-      font-family: var(--mono);
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--green);
-    }
-    .stat-label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-top: 0.2rem;
-    }
+    /* SECTION SHARED */
+    .section-wrap { max-width:1100px; margin:0 auto; padding:6rem 4rem; }
+    .section-tag { font-family:var(--mono); font-size:0.7rem; color:var(--green); text-transform:uppercase; letter-spacing:0.22em; margin-bottom:0.5rem; }
+    .section-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; letter-spacing:-0.03em; margin-bottom:3rem; line-height:1.15; }
+    .alt-bg { background:var(--bg2); transition:background 0.4s; }
 
-    /* ── SECTION SHARED ── */
-    .section-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 6rem 4rem;
-    }
-    .section-tag {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--green);
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      margin-bottom: 0.5rem;
-    }
-    .section-title {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 3rem;
-    }
+    /* ABOUT */
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
+    .about-text p { color:var(--text-muted); margin-bottom:1.2rem; font-size:1rem; }
+    .about-text strong { color:var(--text); }
+    .about-highlights { display:flex; flex-direction:column; gap:1rem; }
+    .highlight-item { display:flex; align-items:flex-start; gap:1rem; padding:1.2rem; background:var(--card); border:1px solid var(--border); border-radius:4px; transition:border-color 0.25s; }
+    .highlight-item:hover { border-color:var(--green); }
+    .highlight-icon { font-size:1.4rem; flex-shrink:0; }
+    .highlight-item h4 { font-size:0.9rem; font-weight:600; margin-bottom:0.2rem; }
+    .highlight-item p { font-size:0.82rem; color:var(--text-muted); margin:0; }
 
-    /* ── ABOUT ── */
-    #about { background: var(--bg2); }
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    .about-text p { color: var(--text-muted); margin-bottom: 1.2rem; font-size: 1.02rem; }
-    .about-text p strong { color: var(--text); }
-    .about-highlights {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .highlight-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1.2rem;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-    }
-    .highlight-icon {
-      font-size: 1.4rem;
-      flex-shrink: 0;
-      margin-top: 0.1rem;
-    }
-    .highlight-item h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
-    .highlight-item p { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+    /* SKILLS */
+    .skills-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; }
+    .skill-group { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:1.5rem; transition:border-color 0.25s; }
+    .skill-group:hover { border-color:var(--green); }
+    .skill-group-title { font-family:var(--mono); font-size:0.74rem; color:var(--green); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:1.2rem; padding-bottom:0.8rem; border-bottom:1px solid var(--border); }
+    .skill-tags { display:flex; flex-wrap:wrap; gap:0.5rem; }
+    .skill-tag { font-family:var(--mono); font-size:0.74rem; padding:0.3rem 0.7rem; border-radius:2px; border:1px solid rgba(0,255,136,0.18); color:var(--text); background:rgba(0,255,136,0.05); transition:all 0.2s; cursor:default; }
+    [data-theme="light"] .skill-tag { border-color:rgba(0,143,80,0.2); background:rgba(0,143,80,0.06); }
+    .skill-tag:hover { background:rgba(0,255,136,0.14); border-color:var(--green); color:var(--green); }
+    [data-theme="light"] .skill-tag:hover { background:rgba(0,143,80,0.12); }
 
-    /* ── SKILLS ── */
-    #skills {}
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    .skill-group {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.5rem;
-      transition: border-color 0.25s;
-    }
-    .skill-group:hover { border-color: rgba(0,255,136,0.35); }
-    .skill-group-title {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--green);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 1.2rem;
-      padding-bottom: 0.8rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .skill-tag {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      padding: 0.3rem 0.7rem;
-      border-radius: 2px;
-      border: 1px solid rgba(0,255,136,0.2);
-      color: var(--text);
-      background: rgba(0,255,136,0.06);
-      transition: all 0.2s;
-    }
-    .skill-tag:hover {
-      background: rgba(0,255,136,0.15);
-      border-color: var(--green);
-      color: var(--green);
-    }
+    /* EXPERIENCE */
+    .timeline { position:relative; padding-left:2rem; }
+    .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,var(--green),transparent); }
+    .timeline-item { position:relative; margin-bottom:3rem; }
+    .timeline-item::before { content:''; position:absolute; left:-2.4rem; top:0.45rem; width:10px; height:10px; background:var(--green); border-radius:50%; box-shadow:0 0 12px var(--green); }
+    .timeline-meta { display:flex; align-items:center; gap:1rem; margin-bottom:0.4rem; flex-wrap:wrap; }
+    .timeline-date { font-family:var(--mono); font-size:0.74rem; color:var(--green); background:rgba(0,255,136,0.07); border:1px solid var(--border); padding:0.2rem 0.6rem; border-radius:2px; }
+    [data-theme="light"] .timeline-date { background:rgba(0,143,80,0.08); }
+    .timeline-company { font-size:0.82rem; color:var(--text-muted); }
+    .timeline-role { font-size:1.12rem; font-weight:700; margin-bottom:0.8rem; }
+    .timeline-points { list-style:none; }
+    .timeline-points li { font-size:0.9rem; color:var(--text-muted); padding:0.28rem 0 0.28rem 1.2rem; position:relative; }
+    .timeline-points li::before { content:'›'; position:absolute; left:0; color:var(--green); font-weight:700; }
 
-    /* ── EXPERIENCE ── */
-    #experience { background: var(--bg2); }
-    .timeline { position: relative; padding-left: 2rem; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 1px;
-      background: linear-gradient(to bottom, var(--green), transparent);
-    }
-    .timeline-item {
-      position: relative;
-      margin-bottom: 3rem;
-    }
-    .timeline-item::before {
-      content: '';
-      position: absolute;
-      left: -2.4rem; top: 0.4rem;
-      width: 10px; height: 10px;
-      background: var(--green);
-      border-radius: 50%;
-      box-shadow: 0 0 12px var(--green);
-    }
-    .timeline-meta {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.4rem;
-      flex-wrap: wrap;
-    }
-    .timeline-date {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--green);
-      background: rgba(0,255,136,0.08);
-      border: 1px solid var(--border);
-      padding: 0.2rem 0.6rem;
-      border-radius: 2px;
-    }
-    .timeline-company {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .timeline-role {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 0.8rem;
-      letter-spacing: -0.01em;
-    }
-    .timeline-points { list-style: none; }
-    .timeline-points li {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      padding: 0.3rem 0;
-      padding-left: 1.2rem;
-      position: relative;
-    }
-    .timeline-points li::before {
-      content: '›';
-      position: absolute;
-      left: 0;
-      color: var(--green);
-      font-weight: 700;
-    }
+    /* PROJECTS */
+    .projects-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1.5rem; }
+    .project-card { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:1.8rem; transition:all 0.3s; position:relative; overflow:hidden; }
+    .project-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--green),transparent); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; }
+    .project-card:hover { border-color:var(--green); transform:translateY(-3px); box-shadow:var(--shadow); }
+    .project-card:hover::before { transform:scaleX(1); }
+    .project-label { font-family:var(--mono); font-size:0.7rem; color:var(--amber); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem; }
+    .project-title { font-size:1.08rem; font-weight:700; margin-bottom:0.6rem; }
+    .project-desc { font-size:0.87rem; color:var(--text-muted); margin-bottom:1.2rem; line-height:1.7; }
+    .project-techs { display:flex; flex-wrap:wrap; gap:0.4rem; }
+    .project-tech { font-family:var(--mono); font-size:0.7rem; color:var(--text-muted); border:1px solid var(--border); padding:0.2rem 0.5rem; border-radius:2px; }
 
-    /* ── PROJECTS ── */
-    #projects {}
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
-    }
-    .project-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.8rem;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .project-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--green), transparent);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s;
-    }
-    .project-card:hover { border-color: rgba(0,255,136,0.3); transform: translateY(-3px); }
-    .project-card:hover::before { transform: scaleX(1); }
-    .project-label {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--amber);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 0.8rem;
-    }
-    .project-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
-    .project-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.2rem; line-height: 1.7; }
-    .project-techs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .project-tech {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 0.2rem 0.5rem;
-      border-radius: 2px;
-    }
+    /* CERTIFICATIONS */
+    .certs-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.4rem; }
+    .cert-card { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:1.5rem; display:flex; gap:1rem; align-items:flex-start; transition:all 0.25s; position:relative; overflow:hidden; }
+    .cert-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--green),transparent); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; }
+    .cert-card:hover { border-color:var(--green); transform:translateY(-2px); }
+    .cert-card:hover::after { transform:scaleX(1); }
+    .cert-icon { font-size:1.9rem; flex-shrink:0; line-height:1; }
+    .cert-issuer { font-family:var(--mono); font-size:0.68rem; color:var(--green); text-transform:uppercase; letter-spacing:0.14em; margin-bottom:0.35rem; }
+    .cert-name { font-size:0.95rem; font-weight:700; margin-bottom:0.25rem; line-height:1.3; }
+    .cert-meta { font-size:0.78rem; color:var(--text-muted); }
+    .tools-strip { margin-top:2.5rem; padding:1.8rem; background:var(--card); border:1px solid var(--border); border-radius:4px; }
+    .tools-strip-title { font-family:var(--mono); font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.18em; margin-bottom:1.1rem; }
+    .tools-list { display:flex; flex-wrap:wrap; gap:0.7rem; }
+    .tool-pill { display:inline-flex; align-items:center; gap:0.4rem; font-family:var(--mono); font-size:0.76rem; padding:0.35rem 0.85rem; border-radius:999px; border:1px solid var(--border); color:var(--text-muted); transition:all 0.2s; cursor:default; }
+    .tool-pill:hover { border-color:var(--green); color:var(--green); background:rgba(0,255,136,0.05); }
+    [data-theme="light"] .tool-pill:hover { background:rgba(0,143,80,0.06); }
+    .dot { width:6px; height:6px; border-radius:50%; background:var(--green); opacity:0.55; }
 
-    /* ── EDUCATION ── */
-    #education { background: var(--bg2); }
-    .edu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    .edu-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.8rem;
-      transition: border-color 0.25s;
-    }
-    .edu-card:hover { border-color: rgba(0,255,136,0.3); }
-    .edu-year {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--green);
-      margin-bottom: 0.8rem;
-    }
-    .edu-degree { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
-    .edu-school { font-size: 0.88rem; color: var(--text-muted); }
-    .edu-badge {
-      display: inline-block;
-      margin-top: 1rem;
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--amber);
-      border: 1px solid rgba(255,184,48,0.25);
-      background: rgba(255,184,48,0.06);
-      padding: 0.25rem 0.6rem;
-      border-radius: 2px;
-    }
+    /* EDUCATION */
+    .edu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+    .edu-card { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:1.8rem; transition:border-color 0.25s; }
+    .edu-card:hover { border-color:var(--green); }
+    .edu-year { font-family:var(--mono); font-size:0.74rem; color:var(--green); margin-bottom:0.8rem; }
+    .edu-degree { font-size:1rem; font-weight:700; margin-bottom:0.3rem; }
+    .edu-school { font-size:0.87rem; color:var(--text-muted); }
+    .edu-badge { display:inline-block; margin-top:1rem; font-family:var(--mono); font-size:0.7rem; color:var(--amber); border:1px solid rgba(255,184,48,0.22); background:rgba(255,184,48,0.06); padding:0.25rem 0.6rem; border-radius:2px; }
+    [data-theme="light"] .edu-badge { border-color:rgba(176,117,0,0.25); background:rgba(176,117,0,0.06); }
 
-    /* ── CONTACT ── */
-    #contact {
-      text-align: center;
-    }
-    #contact .section-wrap { padding-bottom: 8rem; }
-    .contact-subtitle {
-      color: var(--text-muted);
-      max-width: 480px;
-      margin: 0 auto 2.5rem;
-      font-size: 1.02rem;
-    }
-    .contact-links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 4rem;
-    }
-    .contact-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 0.6rem 1.2rem;
-      border-radius: 3px;
-      text-decoration: none;
-      transition: all 0.25s;
-    }
-    .contact-link:hover { color: var(--green); border-color: var(--green); background: rgba(0,255,136,0.05); }
+    /* CONTACT */
+    #contact { text-align:center; }
+    #contact .section-wrap { padding-bottom:8rem; }
+    .contact-subtitle { color:var(--text-muted); max-width:460px; margin:0 auto 2.5rem; font-size:1rem; }
+    .contact-links { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+    .contact-link { display:inline-flex; align-items:center; gap:0.5rem; font-family:var(--mono); font-size:0.8rem; color:var(--text-muted); border:1px solid rgba(128,128,180,0.2); padding:0.6rem 1.2rem; border-radius:3px; text-decoration:none; transition:all 0.25s; }
+    .contact-link:hover { color:var(--green); border-color:var(--green); background:rgba(0,255,136,0.05); }
+    [data-theme="light"] .contact-link:hover { background:rgba(0,143,80,0.06); }
 
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem 4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative; z-index: 1;
-    }
-    footer p { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); }
-    footer span { color: var(--green); }
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:1.5rem 4rem; display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1; transition:border-color 0.4s; }
+    footer p { font-family:var(--mono); font-size:0.72rem; color:var(--text-muted); }
+    footer span { color:var(--green); }
 
-    /* ── SCROLL ANIMATIONS ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { gap: 1.2rem; }
-      .nav-links a { font-size: 0.72rem; }
-      #hero { padding: 7rem 1.5rem 3rem; }
-      .section-wrap { padding: 4rem 1.5rem; }
-      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .hero-stats { gap: 2rem; }
-      footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; }
+    /* RESPONSIVE */
+    @media (max-width:768px) {
+      nav { padding:1rem 1.5rem; }
+      .nav-links { gap:1rem; }
+      .nav-links a { font-size:0.72rem; }
+      #hero { padding:7rem 1.5rem 3rem; }
+      .section-wrap { padding:4rem 1.5rem; }
+      .about-grid { grid-template-columns:1fr; gap:2rem; }
+      .hero-stats { gap:2rem; }
+      footer { flex-direction:column; gap:0.5rem; padding:1.5rem; text-align:center; }
     }
-
-    @media (max-width: 480px) {
-      .nav-links { display: none; }
-    }
+    @media (max-width:520px) { .nav-links { display:none; } }
   </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
 <nav>
-  <div class="nav-logo"><span>~/</span>parvej.dev</div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
+  <a class="nav-logo" href="#hero"><span>~/</span>parvej.dev</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#certifications">Certs</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="toggle-wrap" onclick="toggleTheme()" title="Toggle light/dark mode">
+      <span class="toggle-icon">🌙</span>
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="toggle-icon">☀️</span>
+    </div>
+  </div>
 </nav>
 
-<!-- ── HERO ── -->
 <section id="hero">
   <div class="hero-inner">
     <div class="hero-badge">Available for Senior SDET Opportunities</div>
     <h1 class="hero-name">Parvej<br /><span class="accent">Shaikh</span></h1>
-    <div class="hero-title">
-      <span id="typed-text"></span><span class="cursor"></span>
-    </div>
-    <p class="hero-desc">
-      SDET specialising in <strong>GenAI-powered test automation</strong>, mobile &amp; web quality engineering, and framework architecture.
-      I build intelligent QA systems that ship confidence, not just coverage.
-    </p>
+    <div class="hero-title"><span id="typed-text"></span><span class="cursor-blink"></span></div>
+    <p class="hero-desc">SDET specialising in <strong>GenAI-powered test automation</strong>, mobile &amp; web quality engineering, and framework architecture. I build intelligent QA systems that ship confidence, not just coverage.</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#contact">Let's Connect</a>
       <a class="btn btn-outline" href="#experience">View Work</a>
+      <a class="btn btn-resume" href="Parvej_Shaikh_Resume.pdf" download="Parvej_Shaikh_Resume.pdf">
+        <svg class="dl-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download Resume
+      </a>
     </div>
     <div class="hero-stats">
-      <div>
-        <div class="stat-val">3+</div>
-        <div class="stat-label">Years in QA</div>
-      </div>
-      <div>
-        <div class="stat-val">5+</div>
-        <div class="stat-label">Frameworks Built</div>
-      </div>
-      <div>
-        <div class="stat-val">45+</div>
-        <div class="stat-label">Intents Automated</div>
-      </div>
-      <div>
-        <div class="stat-val">3</div>
-        <div class="stat-label">Jio Products QA'd</div>
-      </div>
+      <div><div class="stat-val">3+</div><div class="stat-label">Years in QA</div></div>
+      <div><div class="stat-val">5+</div><div class="stat-label">Frameworks Built</div></div>
+      <div><div class="stat-val">45+</div><div class="stat-label">Intents Automated</div></div>
+      <div><div class="stat-val">3</div><div class="stat-label">Jio Products QA'd</div></div>
     </div>
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
-<section id="about">
+<section id="about" class="alt-bg">
   <div class="section-wrap">
     <div class="section-tag">01 / About</div>
     <h2 class="section-title">Quality is my<br /><span style="color:var(--green)">craft.</span></h2>
     <div class="about-grid reveal">
       <div class="about-text">
-        <p>
-          I'm a <strong>Senior SDET at Reliance Jio Infocomm Ltd., Mumbai</strong> — one of India's largest telecom platforms.
-          Over 3+ years, I've architected automation frameworks from scratch, built AI-integrated QA pipelines, and
-          driven quality across products serving millions of users.
-        </p>
-        <p>
-          My edge is at the intersection of <strong>traditional test engineering</strong> and <strong>GenAI tooling</strong>
-          — leveraging LLM-powered IDEs like Cursor and Claude Code to dramatically accelerate test coverage, intent classification,
-          and triage workflows.
-        </p>
-        <p>
-          When I'm not breaking software, I'm studying Islamic history, exploring system design, and mentoring QA practices
-          on enterprise-scale projects at Jio.
-        </p>
+        <p>I'm a <strong>Senior SDET at Reliance Jio Infocomm Ltd., Mumbai</strong> — one of India's largest telecom platforms. Over 3+ years, I've architected automation frameworks from scratch, built AI-integrated QA pipelines, and driven quality across products serving millions of users.</p>
+        <p>My edge is at the intersection of <strong>traditional test engineering</strong> and <strong>GenAI tooling</strong> — leveraging LLM-powered IDEs like Cursor and Claude Code to dramatically accelerate test coverage, intent classification, and triage workflows.</p>
+        <p>When I'm not breaking software, I'm studying Islamic history, exploring system design, and mentoring QA practices on enterprise-scale projects at Jio.</p>
       </div>
       <div class="about-highlights">
-        <div class="highlight-item">
-          <div class="highlight-icon">🤖</div>
-          <div>
-            <h4>GenAI QA Pioneer</h4>
-            <p>Built LLM-integrated testing workflows with Cursor IDE, Claude Code, and custom prompt engineering for intent validation.</p>
-          </div>
-        </div>
-        <div class="highlight-item">
-          <div class="highlight-icon">📱</div>
-          <div>
-            <h4>Mobile & Web Automation</h4>
-            <p>Deep expertise in Appium, Maestro, Playwright, Cypress — cross-platform from AirFiber to JioFiber.</p>
-          </div>
-        </div>
-        <div class="highlight-item">
-          <div class="highlight-icon">🏗️</div>
-          <div>
-            <h4>Framework Architect</h4>
-            <p>Designed end-to-end automation frameworks for HelloJio VA and JioCS from the ground up.</p>
-          </div>
-        </div>
-        <div class="highlight-item">
-          <div class="highlight-icon">🔗</div>
-          <div>
-            <h4>API & DevOps Integration</h4>
-            <p>RestAssured, Postman, Azure DevOps MCP integrations, GitHub Actions CI/CD pipelines.</p>
-          </div>
-        </div>
+        <div class="highlight-item"><div class="highlight-icon">🤖</div><div><h4>GenAI QA Pioneer</h4><p>Built LLM-integrated testing workflows with Cursor IDE, Claude Code, and custom prompt engineering for intent validation.</p></div></div>
+        <div class="highlight-item"><div class="highlight-icon">📱</div><div><h4>Mobile & Web Automation</h4><p>Deep expertise in Appium, Maestro, Playwright, Cypress — cross-platform from AirFiber to JioFiber.</p></div></div>
+        <div class="highlight-item"><div class="highlight-icon">🏗️</div><div><h4>Framework Architect</h4><p>Designed end-to-end automation frameworks for HelloJio VA and JioCS from the ground up.</p></div></div>
+        <div class="highlight-item"><div class="highlight-icon">🔗</div><div><h4>API & DevOps Integration</h4><p>RestAssured, Postman, Azure DevOps MCP integrations, GitHub Actions CI/CD pipelines.</p></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── SKILLS ── -->
 <section id="skills">
   <div class="section-wrap">
     <div class="section-tag">02 / Skills</div>
     <h2 class="section-title">The <span style="color:var(--green)">Stack</span></h2>
     <div class="skills-grid reveal">
-      <div class="skill-group">
-        <div class="skill-group-title">// Automation Frameworks</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Selenium</span>
-          <span class="skill-tag">Appium</span>
-          <span class="skill-tag">Playwright</span>
-          <span class="skill-tag">Cypress</span>
-          <span class="skill-tag">Maestro</span>
-          <span class="skill-tag">RestAssured</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <div class="skill-group-title">// Languages & Build</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Java</span>
-          <span class="skill-tag">JavaScript</span>
-          <span class="skill-tag">Maven</span>
-          <span class="skill-tag">Gradle</span>
-          <span class="skill-tag">Shell Scripting</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <div class="skill-group-title">// Testing Tools</div>
-        <div class="skill-tags">
-          <span class="skill-tag">TestNG</span>
-          <span class="skill-tag">JUnit</span>
-          <span class="skill-tag">Postman</span>
-          <span class="skill-tag">BrowserStack</span>
-          <span class="skill-tag">Charles Proxy</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <div class="skill-group-title">// GenAI & AI Tools</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Cursor IDE</span>
-          <span class="skill-tag">Claude Code</span>
-          <span class="skill-tag">Prompt Engineering</span>
-          <span class="skill-tag">LLM Integration</span>
-          <span class="skill-tag">BMAD Framework</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <div class="skill-group-title">// DevOps & CI/CD</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Azure DevOps</span>
-          <span class="skill-tag">GitHub Actions</span>
-          <span class="skill-tag">Jenkins</span>
-          <span class="skill-tag">ADO MCP</span>
-          <span class="skill-tag">Linux</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <div class="skill-group-title">// Testing Domains</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Manual Testing</span>
-          <span class="skill-tag">API Testing</span>
-          <span class="skill-tag">Mobile Testing</span>
-          <span class="skill-tag">Performance QA</span>
-          <span class="skill-tag">SQL / DB Testing</span>
-        </div>
-      </div>
+      <div class="skill-group"><div class="skill-group-title">// Automation Frameworks</div><div class="skill-tags"><span class="skill-tag">Selenium</span><span class="skill-tag">Appium</span><span class="skill-tag">Playwright</span><span class="skill-tag">Cypress</span><span class="skill-tag">Maestro</span><span class="skill-tag">RestAssured</span></div></div>
+      <div class="skill-group"><div class="skill-group-title">// Languages & Build</div><div class="skill-tags"><span class="skill-tag">Java</span><span class="skill-tag">JavaScript</span><span class="skill-tag">Maven</span><span class="skill-tag">Gradle</span><span class="skill-tag">Shell Scripting</span></div></div>
+      <div class="skill-group"><div class="skill-group-title">// Testing Tools</div><div class="skill-tags"><span class="skill-tag">TestNG</span><span class="skill-tag">JUnit</span><span class="skill-tag">Postman</span><span class="skill-tag">BrowserStack</span><span class="skill-tag">Charles Proxy</span></div></div>
+      <div class="skill-group"><div class="skill-group-title">// GenAI & AI Tools</div><div class="skill-tags"><span class="skill-tag">Cursor IDE</span><span class="skill-tag">Claude Code</span><span class="skill-tag">Prompt Engineering</span><span class="skill-tag">LLM Integration</span><span class="skill-tag">BMAD Framework</span></div></div>
+      <div class="skill-group"><div class="skill-group-title">// DevOps & CI/CD</div><div class="skill-tags"><span class="skill-tag">Azure DevOps</span><span class="skill-tag">GitHub Actions</span><span class="skill-tag">Jenkins</span><span class="skill-tag">ADO MCP</span><span class="skill-tag">Linux</span></div></div>
+      <div class="skill-group"><div class="skill-group-title">// Testing Domains</div><div class="skill-tags"><span class="skill-tag">Manual Testing</span><span class="skill-tag">API Testing</span><span class="skill-tag">Mobile Testing</span><span class="skill-tag">Performance QA</span><span class="skill-tag">SQL / DB Testing</span></div></div>
     </div>
   </div>
 </section>
 
-<!-- ── EXPERIENCE ── -->
-<section id="experience">
+<section id="experience" class="alt-bg">
   <div class="section-wrap">
     <div class="section-tag">03 / Experience</div>
     <h2 class="section-title">Where I've<br /><span style="color:var(--green)">worked.</span></h2>
     <div class="timeline reveal">
-
       <div class="timeline-item">
-        <div class="timeline-meta">
-          <span class="timeline-date">2022 – Present</span>
-          <span class="timeline-company">Reliance Jio Infocomm Ltd. · Mumbai</span>
-        </div>
+        <div class="timeline-meta"><span class="timeline-date">2022 – Present</span><span class="timeline-company">Reliance Jio Infocomm Ltd. · Mumbai</span></div>
         <div class="timeline-role">Senior SDET — HelloJio Virtual Assistant</div>
         <ul class="timeline-points">
           <li>Architected end-to-end automation framework for the HelloJio VA platform from scratch, covering 45+ customer intents across Hindi, Hinglish, and English.</li>
@@ -716,12 +315,8 @@
           <li>Integrated Microsoft Teams bug triage channel directly with Azure DevOps for real-time QA notifications.</li>
         </ul>
       </div>
-
       <div class="timeline-item">
-        <div class="timeline-meta">
-          <span class="timeline-date">2022 – 2023</span>
-          <span class="timeline-company">Reliance Jio Infocomm Ltd. · Mumbai</span>
-        </div>
+        <div class="timeline-meta"><span class="timeline-date">2022 – 2023</span><span class="timeline-company">Reliance Jio Infocomm Ltd. · Mumbai</span></div>
         <div class="timeline-role">SDET — JioCS & JioFiber</div>
         <ul class="timeline-points">
           <li>Built automation framework for JioCS from scratch using Selenium, Java, TestNG, and Maven — covering web workflows for customer service agents.</li>
@@ -730,100 +325,61 @@
           <li>Performed API testing using RestAssured and Postman for Jio backend services, validating response schemas and edge cases.</li>
         </ul>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- ── PROJECTS ── -->
 <section id="projects">
   <div class="section-wrap">
     <div class="section-tag">04 / Projects</div>
     <h2 class="section-title">Notable<br /><span style="color:var(--green)">work.</span></h2>
     <div class="projects-grid reveal">
-
-      <div class="project-card">
-        <div class="project-label">GenAI · QA</div>
-        <div class="project-title">HelloJio VA Intent Validator</div>
-        <div class="project-desc">LLM-powered prompt engineering system that validates intent classification across 45 customer intents. Outputs structured CSV with confidence scores, supports Hindi/Hinglish multi-language inputs, and integrates directly with ADO workflows.</div>
-        <div class="project-techs">
-          <span class="project-tech">Cursor IDE</span>
-          <span class="project-tech">Claude Code</span>
-          <span class="project-tech">Prompt Engineering</span>
-          <span class="project-tech">Azure DevOps</span>
-          <span class="project-tech">Python</span>
-        </div>
-      </div>
-
-      <div class="project-card">
-        <div class="project-label">Automation · Web</div>
-        <div class="project-title">JioCS Automation Framework</div>
-        <div class="project-desc">Full automation framework built from scratch for JioCS customer service platform. Covers end-to-end agent workflows with data-driven testing, parallel execution via TestNG, and Maven-based build pipeline.</div>
-        <div class="project-techs">
-          <span class="project-tech">Selenium</span>
-          <span class="project-tech">Java</span>
-          <span class="project-tech">TestNG</span>
-          <span class="project-tech">Maven</span>
-          <span class="project-tech">Jenkins</span>
-        </div>
-      </div>
-
-      <div class="project-card">
-        <div class="project-label">Automation · Mobile</div>
-        <div class="project-title">JioFiber & AirFiber Mobile Suite</div>
-        <div class="project-desc">Mobile automation suite for JioFiber and AirFiber Android/iOS apps. Leveraged Appium and Maestro for script-level automation, BrowserStack for real device cloud, and GitHub Actions for CI/CD triggered nightly runs.</div>
-        <div class="project-techs">
-          <span class="project-tech">Appium</span>
-          <span class="project-tech">Maestro</span>
-          <span class="project-tech">BrowserStack</span>
-          <span class="project-tech">GitHub Actions</span>
-        </div>
-      </div>
-
-      <div class="project-card">
-        <div class="project-label">DevOps · QA</div>
-        <div class="project-title">ADO QA Workspace (MCP)</div>
-        <div class="project-desc">Integrated Azure DevOps MCP server inside Cursor IDE to build a complete QA workspace — managing user stories, test scenarios, bug triage, and branch workflows without leaving the IDE. Presented as an internal PowerPoint deck to the team.</div>
-        <div class="project-techs">
-          <span class="project-tech">Azure DevOps</span>
-          <span class="project-tech">MCP</span>
-          <span class="project-tech">Cursor IDE</span>
-          <span class="project-tech">BMAD Framework</span>
-        </div>
-      </div>
-
-      <div class="project-card">
-        <div class="project-label">API · Testing</div>
-        <div class="project-title">Jio Backend API Test Suite</div>
-        <div class="project-desc">Comprehensive API testing suite for Jio backend microservices using RestAssured. Includes schema validation, contract testing, negative path coverage, and Postman collection exports for manual ad-hoc testing.</div>
-        <div class="project-techs">
-          <span class="project-tech">RestAssured</span>
-          <span class="project-tech">Postman</span>
-          <span class="project-tech">Java</span>
-          <span class="project-tech">JSON Schema</span>
-        </div>
-      </div>
-
-      <div class="project-card">
-        <div class="project-label">AI · Workflow</div>
-        <div class="project-title">Teams Bug Triage Integration</div>
-        <div class="project-desc">Set up automated Microsoft Teams bug triage channel synced with Azure DevOps — routing new bugs, status updates, and critical defects to the right channels in real time, reducing manual QA overhead.</div>
-        <div class="project-techs">
-          <span class="project-tech">MS Teams</span>
-          <span class="project-tech">Azure DevOps</span>
-          <span class="project-tech">Webhooks</span>
-          <span class="project-tech">Power Automate</span>
-        </div>
-      </div>
-
+      <div class="project-card"><div class="project-label">GenAI · QA</div><div class="project-title">HelloJio VA Intent Validator</div><div class="project-desc">LLM-powered prompt engineering system that validates intent classification across 45 customer intents. Outputs structured CSV with confidence scores, supports Hindi/Hinglish multi-language inputs, and integrates with ADO workflows.</div><div class="project-techs"><span class="project-tech">Cursor IDE</span><span class="project-tech">Claude Code</span><span class="project-tech">Prompt Engineering</span><span class="project-tech">Azure DevOps</span></div></div>
+      <div class="project-card"><div class="project-label">Automation · Web</div><div class="project-title">JioCS Automation Framework</div><div class="project-desc">Full automation framework built from scratch for JioCS customer service platform. Covers end-to-end agent workflows with data-driven testing, parallel execution via TestNG, and Maven-based build pipeline.</div><div class="project-techs"><span class="project-tech">Selenium</span><span class="project-tech">Java</span><span class="project-tech">TestNG</span><span class="project-tech">Maven</span><span class="project-tech">Jenkins</span></div></div>
+      <div class="project-card"><div class="project-label">Automation · Mobile</div><div class="project-title">JioFiber & AirFiber Mobile Suite</div><div class="project-desc">Mobile automation suite for JioFiber and AirFiber Android/iOS apps. Leveraged Appium and Maestro for script-level automation, BrowserStack for real device cloud, and GitHub Actions for CI/CD nightly runs.</div><div class="project-techs"><span class="project-tech">Appium</span><span class="project-tech">Maestro</span><span class="project-tech">BrowserStack</span><span class="project-tech">GitHub Actions</span></div></div>
+      <div class="project-card"><div class="project-label">DevOps · QA</div><div class="project-title">ADO QA Workspace (MCP)</div><div class="project-desc">Integrated Azure DevOps MCP server inside Cursor IDE to build a complete QA workspace — managing user stories, test scenarios, bug triage, and branch workflows without leaving the IDE.</div><div class="project-techs"><span class="project-tech">Azure DevOps</span><span class="project-tech">MCP</span><span class="project-tech">Cursor IDE</span><span class="project-tech">BMAD Framework</span></div></div>
+      <div class="project-card"><div class="project-label">API · Testing</div><div class="project-title">Jio Backend API Test Suite</div><div class="project-desc">Comprehensive API testing suite for Jio backend microservices using RestAssured. Includes schema validation, contract testing, negative path coverage, and Postman collection exports.</div><div class="project-techs"><span class="project-tech">RestAssured</span><span class="project-tech">Postman</span><span class="project-tech">Java</span><span class="project-tech">JSON Schema</span></div></div>
+      <div class="project-card"><div class="project-label">AI · Workflow</div><div class="project-title">Teams Bug Triage Integration</div><div class="project-desc">Automated Microsoft Teams bug triage channel synced with Azure DevOps — routing new bugs, status updates, and critical defects to the right channels in real time, reducing manual QA overhead.</div><div class="project-techs"><span class="project-tech">MS Teams</span><span class="project-tech">Azure DevOps</span><span class="project-tech">Webhooks</span><span class="project-tech">Power Automate</span></div></div>
     </div>
   </div>
 </section>
 
-<!-- ── EDUCATION ── -->
+<section id="certifications" class="alt-bg">
+  <div class="section-wrap">
+    <div class="section-tag">05 / Certifications & Tools</div>
+    <h2 class="section-title">Credentials &amp;<br /><span style="color:var(--green)">toolkit.</span></h2>
+    <div class="certs-grid reveal">
+      <div class="cert-card"><div class="cert-icon">📜</div><div><div class="cert-issuer">NPTEL · IIT Kharagpur</div><div class="cert-name">Programming in C++</div><div class="cert-meta">Government of India · Elite certification</div></div></div>
+      <div class="cert-card"><div class="cert-icon">☁️</div><div><div class="cert-issuer">Microsoft · Azure</div><div class="cert-name">Azure DevOps Fundamentals</div><div class="cert-meta">Boards · Pipelines · Repos · ADO MCP</div></div></div>
+      <div class="cert-card"><div class="cert-icon">🤖</div><div><div class="cert-issuer">Anthropic · Cursor IDE</div><div class="cert-name">GenAI-Powered QA Automation</div><div class="cert-meta">Claude Code · BMAD · LLM QA workflows</div></div></div>
+      <div class="cert-card"><div class="cert-icon">🧪</div><div><div class="cert-issuer">Selenium · Appium</div><div class="cert-name">Web & Mobile Test Automation</div><div class="cert-meta">Practitioner-level · 3+ years hands-on</div></div></div>
+      <div class="cert-card"><div class="cert-icon">📱</div><div><div class="cert-issuer">BrowserStack</div><div class="cert-name">Real Device Cloud Testing</div><div class="cert-meta">Android · iOS · Cross-browser coverage</div></div></div>
+      <div class="cert-card"><div class="cert-icon">🔗</div><div><div class="cert-issuer">Postman · RestAssured</div><div class="cert-name">API Testing Specialist</div><div class="cert-meta">REST · JSON Schema · Contract testing</div></div></div>
+    </div>
+    <div class="tools-strip reveal">
+      <div class="tools-strip-title">// Daily tools & environment</div>
+      <div class="tools-list">
+        <span class="tool-pill"><span class="dot"></span>Cursor IDE</span>
+        <span class="tool-pill"><span class="dot"></span>Claude Code</span>
+        <span class="tool-pill"><span class="dot"></span>IntelliJ IDEA</span>
+        <span class="tool-pill"><span class="dot"></span>VS Code</span>
+        <span class="tool-pill"><span class="dot"></span>Azure DevOps</span>
+        <span class="tool-pill"><span class="dot"></span>Postman</span>
+        <span class="tool-pill"><span class="dot"></span>BrowserStack</span>
+        <span class="tool-pill"><span class="dot"></span>Charles Proxy</span>
+        <span class="tool-pill"><span class="dot"></span>GitHub</span>
+        <span class="tool-pill"><span class="dot"></span>Jenkins</span>
+        <span class="tool-pill"><span class="dot"></span>Linux Terminal</span>
+        <span class="tool-pill"><span class="dot"></span>MS Teams</span>
+        <span class="tool-pill"><span class="dot"></span>Jira</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="education">
   <div class="section-wrap">
-    <div class="section-tag">05 / Education</div>
+    <div class="section-tag">06 / Education</div>
     <h2 class="section-title">Academic<br /><span style="color:var(--green)">background.</span></h2>
     <div class="edu-grid reveal">
       <div class="edu-card">
@@ -835,17 +391,16 @@
       <div class="edu-card">
         <div class="edu-year">NPTEL Certification</div>
         <div class="edu-degree">Programming in C++</div>
-        <div class="edu-school">National Programme on Technology Enhanced Learning (NPTEL)<br />IIT Kharagpur</div>
+        <div class="edu-school">National Programme on Technology Enhanced Learning<br />IIT Kharagpur</div>
         <span class="edu-badge">📜 NPTEL Certified</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CONTACT ── -->
 <section id="contact">
   <div class="section-wrap">
-    <div class="section-tag">06 / Contact</div>
+    <div class="section-tag">07 / Contact</div>
     <h2 class="section-title reveal">Let's build<br /><span style="color:var(--green)">something.</span></h2>
     <p class="contact-subtitle reveal">Open to Senior SDET, QA Lead, and GenAI Testing roles. Let's talk.</p>
     <div class="contact-links reveal">
@@ -861,65 +416,28 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
         GitHub
       </a>
-      <a class="contact-link" href="tel:+919999999999">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.82A16 16 0 0 0 16 16.9l.91-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 23.9 18z"/></svg>
-        Mumbai, India
+      <a class="contact-link" href="Parvej_Shaikh_Resume.pdf" download>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Resume PDF
       </a>
     </div>
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
 <footer>
-  <p>© 2025 <span>Parvej Shaikh</span> · SDET & QA Engineer</p>
-  <p>Built with <span>♥</span> · Mumbai, India</p>
+  <p>© 2025 <span>Parvej Shaikh</span> · SDET & QA Engineer · Mumbai</p>
+  <p>Built with <span>♥</span> &amp; green pixels</p>
 </footer>
 
-<!-- ── JS ── -->
 <script>
-  // Typing effect
-  const phrases = [
-    'SDET @ Reliance Jio',
-    'GenAI Testing Specialist',
-    'Automation Framework Architect',
-    'Quality Engineer'
-  ];
-  let pIdx = 0, cIdx = 0, deleting = false;
-  const el = document.getElementById('typed-text');
-
-  function type() {
-    const current = phrases[pIdx];
-    if (!deleting) {
-      el.textContent = current.substring(0, cIdx + 1);
-      cIdx++;
-      if (cIdx === current.length) {
-        deleting = true;
-        setTimeout(type, 1800);
-        return;
-      }
-    } else {
-      el.textContent = current.substring(0, cIdx - 1);
-      cIdx--;
-      if (cIdx === 0) {
-        deleting = false;
-        pIdx = (pIdx + 1) % phrases.length;
-      }
-    }
-    setTimeout(type, deleting ? 50 : 80);
-  }
+  (function(){const s=localStorage.getItem('theme');if(s)document.documentElement.setAttribute('data-theme',s);})();
+  function toggleTheme(){const h=document.documentElement,n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);}
+  const phrases=['SDET @ Reliance Jio','GenAI Testing Specialist','Automation Framework Architect','Quality Engineer'];
+  let pIdx=0,cIdx=0,del=false;const el=document.getElementById('typed-text');
+  function type(){const c=phrases[pIdx];el.textContent=del?c.substring(0,--cIdx):c.substring(0,++cIdx);if(!del&&cIdx===c.length){del=true;setTimeout(type,1900);return;}if(del&&cIdx===0){del=false;pIdx=(pIdx+1)%phrases.length;}setTimeout(type,del?48:78);}
   type();
-
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  reveals.forEach(r => obs.observe(r));
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
 </script>
 </body>
 </html>
